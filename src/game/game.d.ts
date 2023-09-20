@@ -1,1 +1,3 @@
-export function launch(): Promise<any>;
+import { Game } from "phaser";
+
+export function launch(): Game;
