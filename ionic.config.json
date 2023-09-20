@@ -1,0 +1,7 @@
+{
+  "name": "ghost-goblins",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}
