@@ -24,6 +24,9 @@ export class MainScene extends Scene {
     this.load.image("city_layer3", "assets/4.png");
     this.load.image("city_layer4", "assets/5.png");
 
+    this.load.image("level_tiles", "assets/tilemaps/maps/level1.png");
+    this.load.tilemapTiledJSON("level_tileset", "assets/tilemaps/maps/level1.json");
+
     // Added just so can test the parallax scrolling
     this.cursors = this.input.keyboard.createCursorKeys();
   }
@@ -41,7 +44,11 @@ export class MainScene extends Scene {
     createParallaxLayer(this, 5, "city_layer3", 1);
     createParallaxLayer(this, 5, "city_layer4", 1.25);
 
-    this.cameras.main.setBounds(0, 0, width * 3, height, true);
+    //this.physics.add.sprite(width / 2, height / 2, "road_tile");
+    const level1 = this.add.image(0, height, "level_tiles").setOrigin(0, 1);
+    this.add.image(level1.width, height, "level_tiles").setOrigin(0, 1);
+
+    this.cameras.main.setBounds(0, 0, width * 3, height);
   }
 
   update() {

@@ -13,7 +13,7 @@ export function launch() {
     parent: "game",
     backgroundColor: "#201726",
     physics: {
-      default: "arcade"
+      default: "arcade",
     },
     scene: MainScene
   });
