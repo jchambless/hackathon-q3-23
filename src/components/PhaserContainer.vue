@@ -1,21 +1,24 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { IonButton, IonImg, IonContent } from '@ionic/vue';
+import { IonImg } from '@ionic/vue';
 import { launch } from '@/game/game.js';
 import gooseTitle from '@/../public/assets/gooseTitle.gif';
 import honkPlayButton from '@/../public/assets/honkPlayButton.gif';
+import condensedBackground from '@/../public/assets/condensedBackground.png';
+import gooseHonkEffect from '@/../public/assets/soundEffects/gooseHonkEffect1.mp3';
 
 const showTitle = ref(true)
+const launchSound = new Audio(gooseHonkEffect);
 
 function handleClickStart() {
-  this.sound.play(key);
+  launchSound.play();
   showTitle.value = false;
   launch();
 }
 </script>
 
 <template>
-  <div id="game">
+  <div id="game" :style="{ backgroundImage: `url(${condensedBackground})` }">
       <ion-img 
         v-if="showTitle"
         :src=gooseTitle
@@ -39,6 +42,8 @@ function handleClickStart() {
   justify-content: center;
   align-items: center;
   margin: 0;
+  background-size: cover;
+  background-position: center;
 }
 
 #game ion-img,
