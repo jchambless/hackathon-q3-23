@@ -1,28 +1,54 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { IonButton } from '@ionic/vue';
+import { IonButton, IonImg, IonContent } from '@ionic/vue';
 import { launch } from '@/game/game.js';
+import gooseTitle from '@/../public/assets/gooseTitle.gif';
+import honkPlayButton from '@/../public/assets/honkPlayButton.gif';
 
-const showButton = ref(true)
+const showTitle = ref(true)
 
 function handleClickStart() {
-  showButton.value = false;
+  this.sound.play(key);
+  showTitle.value = false;
   launch();
 }
 </script>
 
 <template>
   <div id="game">
-    <ion-button v-if="showButton" @click="handleClickStart">HONK</ion-button>
+      <ion-img 
+        v-if="showTitle"
+        :src=gooseTitle
+        alt="ion goose logo"
+      ></ion-img>
+    <ion-img
+        class="play-button"
+        v-if="showTitle"
+        :src=honkPlayButton
+        alt="play button"
+        @click="handleClickStart"
+      ></ion-img>
   </div>
 </template>
 
 <style scoped>
 #game {
-height: 100%;
-display: flex;
-justify-content: center;
-align-items: center;
-margin: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
 }
+
+#game ion-img,
+#game ion-button {
+  display: block;
+}
+
+.play-button {
+  cursor: pointer;
+  margin-top: 60px;
+}
+
 </style>
