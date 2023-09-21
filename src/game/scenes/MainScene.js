@@ -45,8 +45,7 @@ export class MainScene extends Scene {
     { frameWidth: 120, frameHeight: 160 }
 );
     this.load.image('bottle', 'assets/smallestPlayerProjectile.png');
-    this.load.spritesheet('enemy', 'assets/enemy1.png', { frameWidth: 160, frameHeight: 160 });
-
+    this.load.spritesheet('enemy', 'assets/enemy3.png', { frameWidth: 80, frameHeight: 125 });
     this.load.audio('bgm', 'assets/HONK HONK AM GOOSE.mp3');
     this.load.spritesheet('enemy', 'assets/enemy1.png', { frameWidth: 160, frameHeight: 160 });
 
