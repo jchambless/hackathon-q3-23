@@ -27,6 +27,11 @@ export class MainScene extends Scene {
     this.load.image("level_tiles", "assets/tilemaps/maps/level1.png");
     this.load.tilemapTiledJSON("level_tileset", "assets/tilemaps/maps/level1.json");
 
+    this.load.spritesheet('player', 
+    'assets/movementGoose.png',
+    { frameWidth: 24, frameHeight: 32 }
+);
+
     // Added just so can test the parallax scrolling
     this.cursors = this.input.keyboard.createCursorKeys();
   }
@@ -34,6 +39,8 @@ export class MainScene extends Scene {
   create() {
     const width = this.scale.width;
     const height = this.scale.height;
+    this.screenCenterX = width / 2;
+
 
     this.add.image(width * 0.5, height * 0.5, 'sky')
       .setScale(2)
@@ -49,6 +56,59 @@ export class MainScene extends Scene {
     this.add.image(level1.width, height, "level_tiles").setOrigin(0, 1);
 
     this.cameras.main.setBounds(0, 0, width * 3, height);
+    this.player = this.physics.add.sprite(this.screenCenterX, height, 'player');
+
+         // adds animations for player
+         if (!this.anims.exists('left')) {
+          this.anims.create({
+            key: "left",
+            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
+            frameRate: 10,
+            repeat: -1,
+          });
+        }
+  
+        if (!this.anims.exists('turn')) {
+          this.anims.create({
+            key: "turn",
+            frames: [{ key: 'player', frame: 5 }],
+          });
+        }
+  
+        if (!this.anims.exists('right')) {
+          this.anims.create({
+            key: "right",
+            frames: this.anims.generateFrameNumbers('player', { start: 6, end: 9 }),
+            frameRate: 10,
+            repeat: -1,
+          });
+        }
+
+        // sets player physics
+      this.player.body.setGravityY(300);
+      this.player.setCollideWorldBounds(true);
+
+      // adds collider between player and platforms
+      this.physics.add.collider(this.player, this.platform);
+
+      this.moveLeft = false;
+      this.moveRight = false;
+
+      this.cursors.left.on('pointerdown', () => {
+      this.moveLeft = true;
+      });
+
+      this.cursors.left.on('pointerup', () => {
+      this.moveLeft = false;
+      });
+
+      this.cursors.right.on('pointerdown', () => { 
+      this.moveRight = true;
+      });
+
+      this.cursors.right.on('pointerup', () => {
+      this.moveRight = false;
+    });
   }
 
   update() {
@@ -60,6 +120,21 @@ export class MainScene extends Scene {
     } 
     else if (this.cursors.right.isDown) {
       cam.scrollX += speed;
+    }
+
+    if (this.moveLeft && !this.moveRight) {
+      this.player.setVelocityX(0 - 200);   
+      this.player.anims.play('left', true);
+    }
+  
+    else if (this.moveRight && !this.moveLeft) {
+       this.player.setVelocityX(200);    
+       this.player.anims.play('right', true);
+    }
+  
+    else {
+      this.player.setVelocityX(0);
+      this.player.anims.play('turn');
     }
   }
 }
