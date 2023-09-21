@@ -233,7 +233,6 @@ export class MainScene extends Scene {
       
       this.scoreText = this.add.text(0, 20, "Score: 0", {fontSize: '24px', fill: '#fff'});
 
-      // Crash
       this.physics.add.collider(this.enemies, this.player, (player, enemy) => {
         this.score = 0;
         this.scoreText.setText("Score: 0");
@@ -247,6 +246,8 @@ export class MainScene extends Scene {
       bullet.destroy();
       enemy.destroy();
     }, () => {}, this);
+
+    this.physics.world.setBounds(0, 0, width * 3, height);
   }
 
   update(time, delta) {
