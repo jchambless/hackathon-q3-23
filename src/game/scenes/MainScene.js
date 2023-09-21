@@ -16,6 +16,11 @@ export class MainScene extends Scene {
   constructor() {
     super({ key: 'MainScene' });
   }
+  
+  lastFired = 0;
+  stats;
+  speed;
+  bullets;
 
   preload() {
     this.load.image("sky", "assets/1.png");
@@ -28,9 +33,10 @@ export class MainScene extends Scene {
     this.load.tilemapTiledJSON("level_tileset", "assets/tilemaps/maps/level1.json");
 
     this.load.spritesheet('player', 
-    'assets/movementGoose.png',
-    { frameWidth: 24, frameHeight: 32 }
+    'assets/largeMovementGoose.png',
+    { frameWidth: 120, frameHeight: 160 }
 );
+    this.load.image('bottle', 'assets/smallestPlayerProjectile.png');
 
     // Added just so can test the parallax scrolling
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -93,9 +99,46 @@ export class MainScene extends Scene {
 
       this.moveLeft = false;
       this.moveRight = false; 
+
+      class Bullet extends Phaser.GameObjects.Image
+      {
+          constructor (scene)
+          {
+              super(scene, 0, 0, 'bottle');
+
+              this.speed = Phaser.Math.GetSpeed(400, 1);
+          }
+
+          fire (x, y)
+          {
+              this.setPosition(x + 40, y + 10);
+
+              this.setActive(true);
+              this.setVisible(true);
+          }
+
+          update (time, delta)
+          {
+            this.x += this.speed * delta;
+
+            if (this.x > this.scene.scale.width + 50)
+            {
+                this.setActive(false);
+                this.setVisible(false);
+            }
+          }
+      }
+
+      this.bullets = this.add.group({
+          classType: Bullet,
+          maxSize: 1,
+          runChildUpdate: true
+      });
+
+      this.speed = Phaser.Math.GetSpeed(300, 1);
   }
 
-  update() {
+  update(time, delta) {
 
     if (this.cursors.left.isDown) {
       this.moveLeft = true;
@@ -121,6 +164,18 @@ export class MainScene extends Scene {
     else {
       this.player.setVelocityX(0);
       this.player.anims.play('turn');
+    }
+
+    if (this.cursors.up.isDown && time > this.lastFired && !this.moveLeft)
+    {
+        const bullet = this.bullets.get();
+
+        if (bullet)
+        {
+            bullet.fire(this.player.x, this.player.y);
+
+            this.lastFired = time + 50;
+        }
     }
     
     this.cameras.main.startFollow(this.player);
