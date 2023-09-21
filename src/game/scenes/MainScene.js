@@ -1,4 +1,5 @@
 import { Scene } from "phaser";
+import { useRouter } from "vue-router";
 
 const createParallaxLayer = (scene, count, texture, scrollFactor) => {
   let x = 0;
@@ -10,10 +11,6 @@ const createParallaxLayer = (scene, count, texture, scrollFactor) => {
       .setScrollFactor(scrollFactor);
     x += layer.width;
   }
-}
-
-const setScore = (scoreText, score) => {
-  scoreText.setText($`Score: ${score}`);
 }
 
 export class MainScene extends Scene {
@@ -238,13 +235,18 @@ export class MainScene extends Scene {
 
       // Crash
       this.physics.add.collider(this.enemies, this.player, (player, enemy) => {
-        this.scene.restart()
-      });
+        this.score = 0;
+        this.scoreText.setText("Score: 0");
+        this.music.stop();
+        this.scene.restart();
+      }, () => {}, this);
     
     this.physics.add.collider(this.bullets, this.enemies, function(bullet, enemy) {
+      this.score += 50;
+      this.scoreText.setText(`Score: ${this.score}`);
       bullet.destroy();
       enemy.destroy();
-  });
+    }, () => {}, this);
   }
 
   update(time, delta) {
