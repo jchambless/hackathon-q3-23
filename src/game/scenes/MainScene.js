@@ -12,6 +12,10 @@ const createParallaxLayer = (scene, count, texture, scrollFactor) => {
   }
 }
 
+const setScore = (scoreText, score) => {
+  scoreText.setText($`Score: ${score}`);
+}
+
 export class MainScene extends Scene {
   constructor() {
     super({ key: 'MainScene' });
@@ -21,6 +25,8 @@ export class MainScene extends Scene {
   stats;
   speed;
   bullets;
+  scoreText;
+  score = 0;
 
   preload() {
     this.load.image("sky", "assets/1.png");
@@ -224,6 +230,8 @@ export class MainScene extends Scene {
       });
 
       this.speed = Phaser.Math.GetSpeed(300, 1);
+
+      this.scoreText = this.add.text(16, 16, "Score: 0", {fontSize: '24px', fill: '#fff'});
   }
 
   update(time, delta) {
