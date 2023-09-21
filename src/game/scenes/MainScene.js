@@ -1,5 +1,4 @@
 import { Scene } from "phaser";
-import router from '@/router/index.ts';
 
 const createParallaxLayer = (scene, count, texture, scrollFactor) => {
   let x = 0;
@@ -18,9 +17,8 @@ const setScore = (scoreText, score) => {
 }
 
 export class MainScene extends Scene {
-  constructor(router) {
+  constructor() {
     super({ key: 'MainScene' });
-    this.router = router;
   }
   
   lastFired = 0;
@@ -231,15 +229,17 @@ export class MainScene extends Scene {
 
       this.bullets = this.physics.add.group({
           classType: Bullet,
-          maxSize: 1,
+          maxSize: 5,
           runChildUpdate: true,
       });
 
       this.speed = Phaser.Math.GetSpeed(300, 1);
       
+      this.scoreText = this.add.text(16, 16, "Score: 0", {fontSize: '24px', fill: '#fff'});
+
+      // Crash
       this.physics.add.collider(this.enemies, this.player, (player, enemy) => {
-        console.log('Router before push:', this.router);
-        this.router.push('/');
+        this.scene.restart()
       });
     
     this.physics.add.collider(this.bullets, this.enemies, function(bullet, enemy) {
@@ -284,7 +284,7 @@ export class MainScene extends Scene {
         {
             bullet.fire(this.player.x, this.player.y);
 
-            this.lastFired = time + 50;
+            this.lastFired = time + 300;
         }
     }
 
