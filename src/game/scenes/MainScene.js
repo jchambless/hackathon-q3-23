@@ -108,7 +108,7 @@ export class MainScene extends Scene {
       }
 
         // sets player physics
-      this.player.body.setGravityY(300);
+      this.player.body.setGravityY(500);
       this.player.setCollideWorldBounds(true);
 
       // adds collider between player and platforms
@@ -194,6 +194,10 @@ export class MainScene extends Scene {
             this.lastFired = time + 50;
         }
     }
+
+    if (this.cursors.down.isDown) {
+      this.player.setVelocityY(-300);
+}
     
     this.cameras.main.startFollow(this.player);
   }
