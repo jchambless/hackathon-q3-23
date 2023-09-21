@@ -29,8 +29,10 @@ export class MainScene extends Scene {
     this.load.image("city_layer3", "assets/4.png");
     this.load.image("city_layer4", "assets/5.png");
 
-    this.load.image("level_tiles", "assets/tilemaps/maps/level1.png");
-    this.load.tilemapTiledJSON("level_tileset", "assets/tilemaps/maps/level1.json");
+    this.load.image("tiles", "assets/tilemaps/Tiles.png");
+    this.load.image("props", "assets/tilemaps/Props-01.png");
+    this.load.image("buildings", "assets/tilemaps/Buildings.png");
+    this.load.tilemapTiledJSON("map", "assets/tilemaps/maps/level1.json");
 
     this.load.spritesheet('player', 
     'assets/largeMovementGoose.png',
@@ -57,45 +59,60 @@ export class MainScene extends Scene {
     createParallaxLayer(this, 5, "city_layer3", 1);
     createParallaxLayer(this, 5, "city_layer4", 1.25);
 
-    //this.physics.add.sprite(width / 2, height / 2, "road_tile");
-    const level1 = this.add.image(0, height, "level_tiles").setOrigin(0, 1);
-    this.add.image(level1.width, height, "level_tiles").setOrigin(0, 1);
+    this.map = this.make.tilemap({key: "map", tileHeight: 16, tileWidth: 16});
+    this.tileset = this.map.addTilesetImage("Tiles", "tiles");
+    this.props = this.map.addTilesetImage("Props", "props");
+    this.buildings = this.map.addTilesetImage("Buildings", "buildings");
+    
+    this.buildingLayer2 = this.map.createLayer("Building Layer 2", this.buildings);
+    this.buildingLayer1 = this.map.createLayer("Building Layer", this.buildings);
+    this.propsLayer1 = this.map.createLayer("Clutter Layer", this.props);
+    this.propsLayer2 = this.map.createLayer("Clutter Layer 2", this.props);
+    this.roadLayer = this.map.createLayer("Road Layer", this.tileset);
+    
+    this.buildingLayer2.setPosition(0, height - this.buildingLayer2.getBounds().height);
+    this.buildingLayer1.setPosition(0, height - this.buildingLayer1.getBounds().height);
+    this.propsLayer1.setPosition(0, height - this.propsLayer1.getBounds().height);
+    this.propsLayer2.setPosition(0, height - this.propsLayer2.getBounds().height);
+    this.roadLayer.setPosition(0, height - this.roadLayer.getBounds().height);
+
+    this.map.setCollision([0, 1, 2, 3, 6, 7, 42, 43, 44, 45, 46, 47, 52, 53], true);
 
     this.cameras.main.setBounds(0, 0, width * 3, height);
-    this.player = this.physics.add.sprite(this.screenCenterX, height, 'player');
+    this.player = this.physics.add.sprite(100, 20, 'player');
 
-         // adds animations for player
-         if (!this.anims.exists('left')) {
-          this.anims.create({
-            key: "left",
-            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
-            frameRate: 10,
-            repeat: -1,
-          });
-        }
-  
-        if (!this.anims.exists('turn')) {
-          this.anims.create({
-            key: "turn",
-            frames: [{ key: 'player', frame: 5 }],
-          });
-        }
-  
-        if (!this.anims.exists('right')) {
-          this.anims.create({
-            key: "right",
-            frames: this.anims.generateFrameNumbers('player', { start: 6, end: 9 }),
-            frameRate: 10,
-            repeat: -1,
-          });
-        }
+        // adds animations for player
+        if (!this.anims.exists('left')) {
+        this.anims.create({
+          key: "left",
+          frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
+          frameRate: 10,
+          repeat: -1,
+        });
+      }
+
+      if (!this.anims.exists('turn')) {
+        this.anims.create({
+          key: "turn",
+          frames: [{ key: 'player', frame: 5 }],
+        });
+      }
+
+      if (!this.anims.exists('right')) {
+        this.anims.create({
+          key: "right",
+          frames: this.anims.generateFrameNumbers('player', { start: 6, end: 9 }),
+          frameRate: 10,
+          repeat: -1,
+        });
+      }
 
         // sets player physics
       this.player.body.setGravityY(300);
       this.player.setCollideWorldBounds(true);
 
       // adds collider between player and platforms
-      this.physics.add.collider(this.player, this.level1);
+      this.physics.add.collider(this.player, this.roadLayer);
 
       this.moveLeft = false;
       this.moveRight = false; 
