@@ -89,37 +89,23 @@ export class MainScene extends Scene {
       this.player.setCollideWorldBounds(true);
 
       // adds collider between player and platforms
-      this.physics.add.collider(this.player, this.platform);
+      this.physics.add.collider(this.player, this.level1);
 
       this.moveLeft = false;
-      this.moveRight = false;
-
-      this.cursors.left.on('pointerdown', () => {
-      this.moveLeft = true;
-      });
-
-      this.cursors.left.on('pointerup', () => {
-      this.moveLeft = false;
-      });
-
-      this.cursors.right.on('pointerdown', () => { 
-      this.moveRight = true;
-      });
-
-      this.cursors.right.on('pointerup', () => {
-      this.moveRight = false;
-    });
+      this.moveRight = false; 
   }
 
   update() {
-    const cam = this.cameras.main;
-    const speed = 5;
 
     if (this.cursors.left.isDown) {
-      cam.scrollX -= speed;
+      this.moveLeft = true;
     } 
     else if (this.cursors.right.isDown) {
-      cam.scrollX += speed;
+      this.moveRight = true;
+    }
+    else {
+      this.moveLeft = false;
+      this.moveRight = false;
     }
 
     if (this.moveLeft && !this.moveRight) {
@@ -136,5 +122,7 @@ export class MainScene extends Scene {
       this.player.setVelocityX(0);
       this.player.anims.play('turn');
     }
+    
+    this.cameras.main.startFollow(this.player);
   }
 }
