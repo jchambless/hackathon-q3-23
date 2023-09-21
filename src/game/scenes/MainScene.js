@@ -48,6 +48,9 @@ export class MainScene extends Scene {
     this.load.spritesheet('enemy', 'assets/enemy1.png', { frameWidth: 160, frameHeight: 160 });
 
     this.load.audio('bgm', 'assets/HONK HONK AM GOOSE.mp3');
+    this.load.spritesheet('enemy', 'assets/enemy1.png', { frameWidth: 160, frameHeight: 160 });
+
+    this.load.audio('bgm', 'assets/HONK HONK AM GOOSE.mp3');
 
     // Added just so can test the parallax scrolling
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -125,6 +128,7 @@ export class MainScene extends Scene {
 
         // sets player physics
       this.player.body.setGravityY(500);
+      this.player.body.setGravityY(500);
       this.player.setCollideWorldBounds(true);
 
       // adds collider between player and platforms
@@ -163,7 +167,7 @@ export class MainScene extends Scene {
               const jumpVelocity = Phaser.Math.Between(minJumpVelocity, maxJumpVelocity);
       
               enemy.setVelocityY(jumpVelocity);
-              enemy.setVelocityX(-200); 
+              enemy.body.setAccelerationX(-30); 
             }
         };
     
@@ -180,8 +184,7 @@ export class MainScene extends Scene {
       }
       
       const createEnemyLoop = this.time.addEvent({
-        // random number between 1 and 1.2 seconds
-        delay: Math.floor(Math.random() * (3000 - 2000 + 1)) + 1000,
+        delay: Math.floor(Math.random() * (4000 - 3000 + 1)) + 1000,
         callback: createEnemy,
         callbackScope: this,
         loop: true,
@@ -189,7 +192,7 @@ export class MainScene extends Scene {
 
       this.anims.create({
         key: "enemy_left",
-        frames: this.anims.generateFrameNumbers('enemy', { start: 0, end: 6 }),
+        frames: this.anims.generateFrameNumbers('enemy', { start: 0, end: 5 }),
         frameRate: 10,
         repeat: -1,
       });
@@ -205,6 +208,7 @@ export class MainScene extends Scene {
 
           fire (x, y)
           {
+              this.body.setGravityY(0);
               this.setPosition(x + 40, y + 10);
 
               this.setActive(true);
@@ -223,15 +227,25 @@ export class MainScene extends Scene {
           }
       }
 
-      this.bullets = this.add.group({
+      this.bullets = this.physics.add.group({
           classType: Bullet,
-          maxSize: 1,
-          runChildUpdate: true
+          maxSize: 5,
+          runChildUpdate: true,
       });
 
       this.speed = Phaser.Math.GetSpeed(300, 1);
-
+      
       this.scoreText = this.add.text(16, 16, "Score: 0", {fontSize: '24px', fill: '#fff'});
+
+      // Crash
+      this.physics.add.collider(this.enemies, this.player, (player, enemy) => {
+        this.scene.restart()
+      });
+    
+    this.physics.add.collider(this.bullets, this.enemies, function(bullet, enemy) {
+      bullet.destroy();
+      enemy.destroy();
+  });
   }
 
   update(time, delta) {
@@ -270,7 +284,7 @@ export class MainScene extends Scene {
         {
             bullet.fire(this.player.x, this.player.y);
 
-            this.lastFired = time + 50;
+            this.lastFired = time + 300;
         }
     }
 

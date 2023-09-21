@@ -14,11 +14,6 @@ export function launch() {
     backgroundColor: "#201726",
     physics: {
       default: "arcade",
-      arcade: {
-        gravity: {
-          y: 300,
-        },
-      },
     },
     scene: MainScene
   });
