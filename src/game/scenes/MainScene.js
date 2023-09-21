@@ -39,12 +39,22 @@ export class MainScene extends Scene {
     { frameWidth: 120, frameHeight: 160 }
 );
     this.load.image('bottle', 'assets/smallestPlayerProjectile.png');
+    this.load.spritesheet('enemy', 'assets/enemy1.png', { frameWidth: 160, frameHeight: 160 });
+
+    this.load.audio('bgm', 'assets/HONK HONK AM GOOSE.mp3');
 
     // Added just so can test the parallax scrolling
     this.cursors = this.input.keyboard.createCursorKeys();
   }
 
   create() {
+    this.music =  this.sound.add('bgm', {
+      volume: 0.4,
+      loop: true
+    })
+  
+    this.music.play()
+
     const width = this.scale.width;
     const height = this.scale.height;
     this.screenCenterX = width / 2;
@@ -116,6 +126,67 @@ export class MainScene extends Scene {
 
       this.moveLeft = false;
       this.moveRight = false; 
+
+      this.enemies = this.physics.add.group({
+        gravityY: 500,
+      });
+      this.physics.add.collider(this.enemies, this.roadLayer);
+      
+      const createEnemy = () => {
+        const camera = this.cameras.main;
+        const cameraX = camera.scrollX;
+        const cameraWidth = camera.width;
+
+        const spawnX = cameraX + cameraWidth;
+        const spawnY = height - 200;
+
+        const enemy = this.enemies.create(spawnX, spawnY, 'enemy');
+        const minVelocity = 100;
+        const maxVelocity = 300;
+        const velocity = Phaser.Math.Between(minVelocity, maxVelocity);
+        enemy.setVelocityX(0 - velocity);
+        enemy.anims.play('enemy_left', true);
+
+        const minJumpTime = 1000;
+        const maxJumpTime = 2500;
+    
+        const jump = () => {
+            if (enemy.body.blocked.down || enemy.body.touching.down) {
+              const minJumpVelocity = -300; 
+              const maxJumpVelocity = -800;
+              const jumpVelocity = Phaser.Math.Between(minJumpVelocity, maxJumpVelocity);
+      
+              enemy.setVelocityY(jumpVelocity);
+              enemy.setVelocityX(-200); 
+            }
+        };
+    
+        const jumpTimer = this.time.addEvent({
+            delay: Phaser.Math.Between(minJumpTime, maxJumpTime),
+            callback: jump,
+            callbackScope: this,
+            loop: true,
+        });
+    
+        enemy.on('destroy', () => {
+            jumpTimer.remove();
+        });
+      }
+      
+      const createEnemyLoop = this.time.addEvent({
+        // random number between 1 and 1.2 seconds
+        delay: Math.floor(Math.random() * (3000 - 2000 + 1)) + 1000,
+        callback: createEnemy,
+        callbackScope: this,
+        loop: true,
+      });
+
+      this.anims.create({
+        key: "enemy_left",
+        frames: this.anims.generateFrameNumbers('enemy', { start: 0, end: 6 }),
+        frameRate: 10,
+        repeat: -1,
+      });
 
       class Bullet extends Phaser.GameObjects.Image
       {
