@@ -157,7 +157,7 @@ export class MainScene extends Scene {
               const jumpVelocity = Phaser.Math.Between(minJumpVelocity, maxJumpVelocity);
       
               enemy.setVelocityY(jumpVelocity);
-              enemy.setVelocityX(-200); 
+              enemy.body.setAccelerationX(-30); 
             }
         };
     
@@ -174,8 +174,7 @@ export class MainScene extends Scene {
       }
       
       const createEnemyLoop = this.time.addEvent({
-        // random number between 1 and 1.2 seconds
-        delay: Math.floor(Math.random() * (3000 - 2000 + 1)) + 1000,
+        delay: Math.floor(Math.random() * (4000 - 3000 + 1)) + 1000,
         callback: createEnemy,
         callbackScope: this,
         loop: true,
@@ -217,13 +216,23 @@ export class MainScene extends Scene {
           }
       }
 
-      this.bullets = this.add.group({
+      this.bullets = this.physics.add.group({
           classType: Bullet,
           maxSize: 1,
-          runChildUpdate: true
+          runChildUpdate: true,
+          gravityY: 0,
       });
 
       this.speed = Phaser.Math.GetSpeed(300, 1);
+      
+      this.physics.add.collider(this.enemies, this.player, function(enemy, player) {
+        player.destroy();
+    });
+    
+    this.physics.add.collider(this.bullets, this.enemies, function(bullet, enemy) {
+      bullet.destroy();
+      enemy.destroy();
+  });
   }
 
   update(time, delta) {
