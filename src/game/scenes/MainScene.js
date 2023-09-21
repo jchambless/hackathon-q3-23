@@ -231,7 +231,7 @@ export class MainScene extends Scene {
 
       this.speed = Phaser.Math.GetSpeed(300, 1);
       
-      this.scoreText = this.add.text(16, 16, "Score: 0", {fontSize: '24px', fill: '#fff'});
+      this.scoreText = this.add.text(0, 20, "Score: 0", {fontSize: '24px', fill: '#fff'});
 
       // Crash
       this.physics.add.collider(this.enemies, this.player, (player, enemy) => {
@@ -291,8 +291,9 @@ export class MainScene extends Scene {
 
     if (this.cursors.down.isDown) {
       this.player.setVelocityY(-300);
-}
+    }
     
     this.cameras.main.startFollow(this.player);
+    this.scoreText.x = this.player.x;
   }
 }
