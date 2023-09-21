@@ -56,7 +56,7 @@ export class MainScene extends Scene {
     this.add.image(level1.width, height, "level_tiles").setOrigin(0, 1);
 
     this.cameras.main.setBounds(0, 0, width * 3, height);
-    this.player = this.physics.add.sprite(this.screenCenterX, height - 24, 'player');
+    this.player = this.physics.add.sprite(this.screenCenterX, height, 'player');
 
          // adds animations for player
          if (!this.anims.exists('left')) {
@@ -89,7 +89,7 @@ export class MainScene extends Scene {
       this.player.setCollideWorldBounds(true);
 
       // adds collider between player and platforms
-      // this.physics.add.collider(this.player, this.platform);
+      this.physics.add.collider(this.player, this.platform);
 
       this.moveLeft = false;
       this.moveRight = false;
