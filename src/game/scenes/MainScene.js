@@ -1,4 +1,5 @@
 import { Scene } from "phaser";
+import router from '@/router/index.ts';
 
 const createParallaxLayer = (scene, count, texture, scrollFactor) => {
   let x = 0;
@@ -12,15 +13,22 @@ const createParallaxLayer = (scene, count, texture, scrollFactor) => {
   }
 }
 
+const setScore = (scoreText, score) => {
+  scoreText.setText($`Score: ${score}`);
+}
+
 export class MainScene extends Scene {
-  constructor() {
+  constructor(router) {
     super({ key: 'MainScene' });
+    this.router = router;
   }
   
   lastFired = 0;
   stats;
   speed;
   bullets;
+  scoreText;
+  score = 0;
 
   preload() {
     this.load.image("sky", "assets/1.png");
@@ -39,6 +47,9 @@ export class MainScene extends Scene {
     { frameWidth: 120, frameHeight: 160 }
 );
     this.load.image('bottle', 'assets/smallestPlayerProjectile.png');
+    this.load.spritesheet('enemy', 'assets/enemy1.png', { frameWidth: 160, frameHeight: 160 });
+
+    this.load.audio('bgm', 'assets/HONK HONK AM GOOSE.mp3');
     this.load.spritesheet('enemy', 'assets/enemy1.png', { frameWidth: 160, frameHeight: 160 });
 
     this.load.audio('bgm', 'assets/HONK HONK AM GOOSE.mp3');
@@ -119,6 +130,7 @@ export class MainScene extends Scene {
 
         // sets player physics
       this.player.body.setGravityY(500);
+      this.player.body.setGravityY(500);
       this.player.setCollideWorldBounds(true);
 
       // adds collider between player and platforms
@@ -182,7 +194,7 @@ export class MainScene extends Scene {
 
       this.anims.create({
         key: "enemy_left",
-        frames: this.anims.generateFrameNumbers('enemy', { start: 0, end: 6 }),
+        frames: this.anims.generateFrameNumbers('enemy', { start: 0, end: 5 }),
         frameRate: 10,
         repeat: -1,
       });
@@ -198,6 +210,7 @@ export class MainScene extends Scene {
 
           fire (x, y)
           {
+              this.body.setGravityY(0);
               this.setPosition(x + 40, y + 10);
 
               this.setActive(true);
@@ -220,14 +233,14 @@ export class MainScene extends Scene {
           classType: Bullet,
           maxSize: 1,
           runChildUpdate: true,
-          gravityY: 0,
       });
 
       this.speed = Phaser.Math.GetSpeed(300, 1);
       
-      this.physics.add.collider(this.enemies, this.player, function(enemy, player) {
-        player.destroy();
-    });
+      this.physics.add.collider(this.enemies, this.player, (player, enemy) => {
+        console.log('Router before push:', this.router);
+        this.router.push('/');
+      });
     
     this.physics.add.collider(this.bullets, this.enemies, function(bullet, enemy) {
       bullet.destroy();
